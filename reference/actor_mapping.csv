@@ -1,0 +1,17 @@
+actor_code,actor_name,actor_type,review_note
+AE,United Arab Emirates,country,Name agrees across all source files
+CN,China,country,Name agrees across all source files
+DE,Germany,country,Name agrees across all source files
+FR,France,country,Name agrees across all source files
+IN,India,country,Name agrees across all source files
+JP,Japan,country,Name agrees across all source files
+KR,South Korea,country,Name agrees across all source files
+NL,Netherlands,country,Name agrees across all source files
+PK,Pakistan,country,Name agrees across all source files
+SA,Saudi Arabia,country,Name agrees across all source files
+TW,Taiwan,country,Name agrees across all source files
+US,United States,country,Name agrees across all source files
+EU,EU,regional_organization,Source gives the code as the name; imposing actor only; no country-year data
+GLOBAL,GLOBAL,global_scope,Source scope marker used as a target; must never be treated as a country
+IR,IR,unresolved_source_actor,Source gives only the code; no country-year data; name kept exactly as delivered
+RU,RU,unresolved_source_actor,Source gives only the code; no country-year data; name kept exactly as delivered
