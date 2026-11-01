@@ -1,0 +1,417 @@
+{
+ "environment": {
+  "platform": "Windows-11-10.0.26200-SP0",
+  "python": "3.12.10",
+  "version": "2811372e1d962fe0"
+ },
+ "results": [
+  {
+   "config": "Baseline (no cache)",
+   "ttl": 300,
+   "requests": 96,
+   "p50_ms": 74.0,
+   "p95_ms": 116.2,
+   "mean_ms": 73.6,
+   "hit": 0,
+   "miss": 0,
+   "bypass": 96,
+   "hit_rate": 0.0,
+   "prefetched": 0,
+   "prefetch_used": 0,
+   "prefetch_bytes": 0,
+   "wasted_bytes": 0,
+   "endpoints": {
+    "SQL: trade list page": {
+     "cold_ms": 83.3,
+     "p50_ms": 53.7,
+     "p95_ms": 89.6,
+     "bytes": 14713,
+     "digest": "d91943ccda31fa1d9808f76940ad97d3da0b50ee081c634a76e850173eea77b3"
+    },
+    "SQL: trade summary by hardware": {
+     "cold_ms": 41.3,
+     "p50_ms": 40.6,
+     "p95_ms": 57.5,
+     "bytes": 2329,
+     "digest": "0666ba12303734abfd47075ab11b462d9b8dc0bc2e0aa88157e02c61b9642dd0"
+    },
+    "SQL: full-text restriction search": {
+     "cold_ms": 55.1,
+     "p50_ms": 41.5,
+     "p95_ms": 55.1,
+     "bytes": 13337,
+     "digest": "4a24ed1eee648d548603cff61a64ab746de348841db9be0c2c52d26f908e698b"
+    },
+    "SQL: top links (window functions)": {
+     "cold_ms": 34.4,
+     "p50_ms": 35.5,
+     "p95_ms": 43.9,
+     "bytes": 2788,
+     "digest": "ee4f1b8b49499c11b324dde956983520baac1c81a0d07acbdb0ba3250b6d3864"
+    },
+    "SQL: actor profile (9 queries)": {
+     "cold_ms": 138.0,
+     "p50_ms": 113.3,
+     "p95_ms": 156.6,
+     "bytes": 12676,
+     "digest": "9e506b4a6083775d56fa5cbe84bb021a42f4a83ce889dd022ad1525bad11ba09"
+    },
+    "Neo4j: neighbourhood": {
+     "cold_ms": 101.4,
+     "p50_ms": 79.8,
+     "p95_ms": 101.4,
+     "bytes": 3572,
+     "digest": "7622dae90bd97d3808b0c3aa58f057302fde62151893b93bd15c1cd34c44404e"
+    },
+    "Neo4j: 3-hop paths": {
+     "cold_ms": 46.1,
+     "p50_ms": 42.8,
+     "p95_ms": 54.3,
+     "bytes": 1171,
+     "digest": "4cebaad76c4d048744b7213f8850bb377c6fd079553911cd1b144785a4742c9c"
+    },
+    "Neo4j: 4-hop paths": {
+     "cold_ms": 55.5,
+     "p50_ms": 44.7,
+     "p95_ms": 60.9,
+     "bytes": 1924,
+     "digest": "7562e74bdb604d3c133fd6072a1c1bebea0decc8d4ef907d9c214609a07f4845"
+    },
+    "Neo4j: network aggregation": {
+     "cold_ms": 81.2,
+     "p50_ms": 75.8,
+     "p95_ms": 109.7,
+     "bytes": 17462,
+     "digest": "42f88c68d9e15a9f27b37329091746e2e3db9b6a4b66b22576a839167c1cf5f0"
+    }
+   },
+   "concurrent": {
+    "p50_ms": 170.6,
+    "p95_ms": 235.9,
+    "req_per_s": 24.5
+   }
+  },
+  {
+   "config": "Redis cache-aside",
+   "ttl": 300,
+   "requests": 96,
+   "p50_ms": 33.4,
+   "p95_ms": 176.8,
+   "mean_ms": 53.0,
+   "hit": 73,
+   "miss": 23,
+   "bypass": 0,
+   "hit_rate": 76.0,
+   "prefetched": 0,
+   "prefetch_used": 0,
+   "prefetch_bytes": 0,
+   "wasted_bytes": 0,
+   "endpoints": {
+    "SQL: trade list page": {
+     "cold_ms": 100.1,
+     "p50_ms": 85.6,
+     "p95_ms": 144.9,
+     "bytes": 14713,
+     "digest": "d91943ccda31fa1d9808f76940ad97d3da0b50ee081c634a76e850173eea77b3"
+    },
+    "SQL: trade summary by hardware": {
+     "cold_ms": 98.7,
+     "p50_ms": 36.5,
+     "p95_ms": 60.5,
+     "bytes": 2329,
+     "digest": "0666ba12303734abfd47075ab11b462d9b8dc0bc2e0aa88157e02c61b9642dd0"
+    },
+    "SQL: full-text restriction search": {
+     "cold_ms": 97.6,
+     "p50_ms": 66.6,
+     "p95_ms": 91.7,
+     "bytes": 13337,
+     "digest": "4a24ed1eee648d548603cff61a64ab746de348841db9be0c2c52d26f908e698b"
+    },
+    "SQL: top links (window functions)": {
+     "cold_ms": 57.2,
+     "p50_ms": 32.6,
+     "p95_ms": 67.6,
+     "bytes": 2788,
+     "digest": "ee4f1b8b49499c11b324dde956983520baac1c81a0d07acbdb0ba3250b6d3864"
+    },
+    "SQL: actor profile (9 queries)": {
+     "cold_ms": 32.1,
+     "p50_ms": 30.4,
+     "p95_ms": 45.7,
+     "bytes": 12676,
+     "digest": "9e506b4a6083775d56fa5cbe84bb021a42f4a83ce889dd022ad1525bad11ba09"
+    },
+    "Neo4j: neighbourhood": {
+     "cold_ms": 23.3,
+     "p50_ms": 24.8,
+     "p95_ms": 30.6,
+     "bytes": 3572,
+     "digest": "7622dae90bd97d3808b0c3aa58f057302fde62151893b93bd15c1cd34c44404e"
+    },
+    "Neo4j: 3-hop paths": {
+     "cold_ms": 38.7,
+     "p50_ms": 25.1,
+     "p95_ms": 33.5,
+     "bytes": 1171,
+     "digest": "4cebaad76c4d048744b7213f8850bb377c6fd079553911cd1b144785a4742c9c"
+    },
+    "Neo4j: 4-hop paths": {
+     "cold_ms": 53.0,
+     "p50_ms": 24.7,
+     "p95_ms": 30.1,
+     "bytes": 1924,
+     "digest": "7562e74bdb604d3c133fd6072a1c1bebea0decc8d4ef907d9c214609a07f4845"
+    },
+    "Neo4j: network aggregation": {
+     "cold_ms": 93.3,
+     "p50_ms": 29.6,
+     "p95_ms": 44.9,
+     "bytes": 17462,
+     "digest": "42f88c68d9e15a9f27b37329091746e2e3db9b6a4b66b22576a839167c1cf5f0"
+    }
+   },
+   "concurrent": {
+    "p50_ms": 120.7,
+    "p95_ms": 263.3,
+    "req_per_s": 28.4
+   }
+  },
+  {
+   "config": "Cache + static prefetch",
+   "ttl": 300,
+   "requests": 96,
+   "p50_ms": 27.2,
+   "p95_ms": 98.1,
+   "mean_ms": 38.2,
+   "hit": 79,
+   "miss": 17,
+   "bypass": 0,
+   "hit_rate": 82.3,
+   "prefetched": 7,
+   "prefetch_used": 6,
+   "prefetch_bytes": 59806,
+   "wasted_bytes": 12188,
+   "endpoints": {
+    "SQL: trade list page": {
+     "cold_ms": 66.6,
+     "p50_ms": 50.4,
+     "p95_ms": 66.6,
+     "bytes": 14713,
+     "digest": "d91943ccda31fa1d9808f76940ad97d3da0b50ee081c634a76e850173eea77b3"
+    },
+    "SQL: trade summary by hardware": {
+     "cold_ms": 55.3,
+     "p50_ms": 22.6,
+     "p95_ms": 42.5,
+     "bytes": 2329,
+     "digest": "0666ba12303734abfd47075ab11b462d9b8dc0bc2e0aa88157e02c61b9642dd0"
+    },
+    "SQL: full-text restriction search": {
+     "cold_ms": 96.1,
+     "p50_ms": 49.1,
+     "p95_ms": 79.4,
+     "bytes": 13337,
+     "digest": "4a24ed1eee648d548603cff61a64ab746de348841db9be0c2c52d26f908e698b"
+    },
+    "SQL: top links (window functions)": {
+     "cold_ms": 62.5,
+     "p50_ms": 22.7,
+     "p95_ms": 33.5,
+     "bytes": 2788,
+     "digest": "ee4f1b8b49499c11b324dde956983520baac1c81a0d07acbdb0ba3250b6d3864"
+    },
+    "SQL: actor profile (9 queries)": {
+     "cold_ms": 27.5,
+     "p50_ms": 24.4,
+     "p95_ms": 32.8,
+     "bytes": 12676,
+     "digest": "9e506b4a6083775d56fa5cbe84bb021a42f4a83ce889dd022ad1525bad11ba09"
+    },
+    "Neo4j: neighbourhood": {
+     "cold_ms": 23.2,
+     "p50_ms": 22.8,
+     "p95_ms": 30.7,
+     "bytes": 3572,
+     "digest": "7622dae90bd97d3808b0c3aa58f057302fde62151893b93bd15c1cd34c44404e"
+    },
+    "Neo4j: 3-hop paths": {
+     "cold_ms": 37.5,
+     "p50_ms": 21.7,
+     "p95_ms": 28.0,
+     "bytes": 1171,
+     "digest": "4cebaad76c4d048744b7213f8850bb377c6fd079553911cd1b144785a4742c9c"
+    },
+    "Neo4j: 4-hop paths": {
+     "cold_ms": 46.9,
+     "p50_ms": 22.8,
+     "p95_ms": 29.4,
+     "bytes": 1924,
+     "digest": "7562e74bdb604d3c133fd6072a1c1bebea0decc8d4ef907d9c214609a07f4845"
+    },
+    "Neo4j: network aggregation": {
+     "cold_ms": 71.6,
+     "p50_ms": 27.1,
+     "p95_ms": 37.6,
+     "bytes": 17462,
+     "digest": "42f88c68d9e15a9f27b37329091746e2e3db9b6a4b66b22576a839167c1cf5f0"
+    }
+   },
+   "concurrent": {
+    "p50_ms": 92.7,
+    "p95_ms": 127.8,
+    "req_per_s": 34.0
+   }
+  },
+  {
+   "config": "Cache + adaptive prefetch",
+   "ttl": 300,
+   "requests": 96,
+   "p50_ms": 27.4,
+   "p95_ms": 102.9,
+   "mean_ms": 37.5,
+   "hit": 84,
+   "miss": 12,
+   "bypass": 0,
+   "hit_rate": 87.5,
+   "prefetched": 12,
+   "prefetch_used": 11,
+   "prefetch_bytes": 95997,
+   "wasted_bytes": 12188,
+   "endpoints": {
+    "SQL: trade list page": {
+     "cold_ms": 87.3,
+     "p50_ms": 61.6,
+     "p95_ms": 96.2,
+     "bytes": 14713,
+     "digest": "d91943ccda31fa1d9808f76940ad97d3da0b50ee081c634a76e850173eea77b3"
+    },
+    "SQL: trade summary by hardware": {
+     "cold_ms": 65.9,
+     "p50_ms": 23.8,
+     "p95_ms": 35.5,
+     "bytes": 2329,
+     "digest": "0666ba12303734abfd47075ab11b462d9b8dc0bc2e0aa88157e02c61b9642dd0"
+    },
+    "SQL: full-text restriction search": {
+     "cold_ms": 66.6,
+     "p50_ms": 47.7,
+     "p95_ms": 54.3,
+     "bytes": 13337,
+     "digest": "4a24ed1eee648d548603cff61a64ab746de348841db9be0c2c52d26f908e698b"
+    },
+    "SQL: top links (window functions)": {
+     "cold_ms": 43.7,
+     "p50_ms": 22.7,
+     "p95_ms": 31.4,
+     "bytes": 2788,
+     "digest": "ee4f1b8b49499c11b324dde956983520baac1c81a0d07acbdb0ba3250b6d3864"
+    },
+    "SQL: actor profile (9 queries)": {
+     "cold_ms": 28.5,
+     "p50_ms": 26.4,
+     "p95_ms": 32.0,
+     "bytes": 12676,
+     "digest": "9e506b4a6083775d56fa5cbe84bb021a42f4a83ce889dd022ad1525bad11ba09"
+    },
+    "Neo4j: neighbourhood": {
+     "cold_ms": 31.4,
+     "p50_ms": 23.3,
+     "p95_ms": 30.7,
+     "bytes": 3572,
+     "digest": "7622dae90bd97d3808b0c3aa58f057302fde62151893b93bd15c1cd34c44404e"
+    },
+    "Neo4j: 3-hop paths": {
+     "cold_ms": 34.8,
+     "p50_ms": 21.9,
+     "p95_ms": 30.6,
+     "bytes": 1171,
+     "digest": "4cebaad76c4d048744b7213f8850bb377c6fd079553911cd1b144785a4742c9c"
+    },
+    "Neo4j: 4-hop paths": {
+     "cold_ms": 46.9,
+     "p50_ms": 21.7,
+     "p95_ms": 24.8,
+     "bytes": 1924,
+     "digest": "7562e74bdb604d3c133fd6072a1c1bebea0decc8d4ef907d9c214609a07f4845"
+    },
+    "Neo4j: network aggregation": {
+     "cold_ms": 80.5,
+     "p50_ms": 31.7,
+     "p95_ms": 42.6,
+     "bytes": 17462,
+     "digest": "42f88c68d9e15a9f27b37329091746e2e3db9b6a4b66b22576a839167c1cf5f0"
+    }
+   },
+   "concurrent": {
+    "p50_ms": 89.2,
+    "p95_ms": 118.1,
+    "req_per_s": 35.2
+   }
+  },
+  {
+   "config": "Baseline (no cache)",
+   "ttl": 5,
+   "requests": 96,
+   "p50_ms": 82.9,
+   "p95_ms": 126.4,
+   "mean_ms": 82.5,
+   "hit": 0,
+   "miss": 0,
+   "bypass": 96,
+   "hit_rate": 0.0,
+   "prefetched": 0,
+   "prefetch_used": 0,
+   "prefetch_bytes": 0,
+   "wasted_bytes": 0
+  },
+  {
+   "config": "Redis cache-aside",
+   "ttl": 5,
+   "requests": 96,
+   "p50_ms": 62.6,
+   "p95_ms": 152.8,
+   "mean_ms": 73.3,
+   "hit": 35,
+   "miss": 61,
+   "bypass": 0,
+   "hit_rate": 36.5,
+   "prefetched": 0,
+   "prefetch_used": 0,
+   "prefetch_bytes": 0,
+   "wasted_bytes": 0
+  },
+  {
+   "config": "Cache + static prefetch",
+   "ttl": 5,
+   "requests": 96,
+   "p50_ms": 54.0,
+   "p95_ms": 154.9,
+   "mean_ms": 65.2,
+   "hit": 52,
+   "miss": 44,
+   "bypass": 0,
+   "hit_rate": 54.2,
+   "prefetched": 53,
+   "prefetch_used": 20,
+   "prefetch_bytes": 446226,
+   "wasted_bytes": 251370
+  },
+  {
+   "config": "Cache + adaptive prefetch",
+   "ttl": 5,
+   "requests": 96,
+   "p50_ms": 43.2,
+   "p95_ms": 123.0,
+   "mean_ms": 55.0,
+   "hit": 62,
+   "miss": 34,
+   "bypass": 0,
+   "hit_rate": 64.6,
+   "prefetched": 60,
+   "prefetch_used": 30,
+   "prefetch_bytes": 500516,
+   "wasted_bytes": 210784
+  }
+ ]
+}
