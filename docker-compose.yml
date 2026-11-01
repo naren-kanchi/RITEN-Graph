@@ -1,0 +1,98 @@
+# Host ports are deliberately non-default and bound to loopback so the stack can
+# run alongside other local projects without exposing databases to the network.
+name: riten-graph
+services:
+  postgres:
+    image: postgres:16.9-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports: ["127.0.0.1:55432:5432"]
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 3s
+      timeout: 3s
+      retries: 30
+  neo4j:
+    image: neo4j:5.26.8-community
+    environment:
+      NEO4J_AUTH: ${NEO4J_USER}/${NEO4J_PASSWORD}
+      NEO4J_server_memory_heap_max__size: 1G
+      NEO4J_server_memory_pagecache_size: 256M
+    ports: ["127.0.0.1:57474:7474", "127.0.0.1:57687:7687"]
+    volumes: [neo4jdata:/data]
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:7474 || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 40
+  redis:
+    image: redis:7.4.4-alpine
+    command: ["redis-server", "--maxmemory", "128mb", "--maxmemory-policy", "allkeys-lru", "--save", ""]
+    ports: ["127.0.0.1:56379:6379"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+  # One-shot: applies migrations, loads CSVs, projects the graph, seeds users.
+  init:
+    build: ./backend
+    command: ["python", "-m", "riten.etl.run", "--all"]
+    env_file: .env
+    environment: &svc_env
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: "5432"
+      NEO4J_URI: bolt://neo4j:7687
+      REDIS_URL: redis://redis:6379/0
+      DATA_DIR: /data
+      REFERENCE_DIR: /app/reference
+      MIGRATIONS_DIR: /app/migrations
+      REPORT_PATH: /docs_out/DATA_QUALITY_REPORT.md
+    volumes: ["./data:/data:ro", "./reference:/app/reference:ro", "./migrations:/app/migrations:ro", "./docs:/docs_out"]
+    depends_on:
+      postgres: {condition: service_healthy}
+      neo4j: {condition: service_healthy}
+    profiles: [app]
+  api:
+    build: ./backend
+    env_file: .env
+    environment:
+      <<: *svc_env
+      # The API only uses the least-privilege app role, so it never receives the owner password.
+      POSTGRES_PASSWORD: ""
+      CACHE_ENABLED: "true"
+    ports: ["127.0.0.1:18000:8000"]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request as u; u.urlopen('http://localhost:8000/health/ready')"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+    depends_on:
+      init: {condition: service_completed_successfully}
+      redis: {condition: service_healthy}
+    profiles: [app]
+  web:
+    build: ./frontend
+    environment:
+      API_INTERNAL_URL: http://api:8000
+    ports: ["127.0.0.1:13000:3000"]
+    depends_on:
+      api: {condition: service_healthy}
+    profiles: [app]
+  worker:
+    build: ./backend
+    command: ["python", "-m", "riten.worker"]
+    env_file: .env
+    environment:
+      <<: *svc_env
+      POSTGRES_PASSWORD: ""
+      CACHE_ENABLED: "true"
+    depends_on:
+      api: {condition: service_healthy}
+    profiles: [prefetch]
+volumes:
+  pgdata: {}
+  neo4jdata: {}
