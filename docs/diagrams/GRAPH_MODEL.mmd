@@ -1,0 +1,16 @@
+flowchart LR
+  ACTOR["(:Actor {actor_code, actor_name, actor_type})"]
+  ACTOR2["(:Actor {actor_code, actor_name, actor_type})"]
+  ACTOR -->|"TRADE_FLOW {trade_id, year, quarter, hardware_type, category, value, volume, restricted, is_synthetic}"| ACTOR2
+  ACTOR -->|"IMPOSED {sanction_id, date, type, severity, status, is_synthetic}"| ACTOR2
+  CO["(:Company {company_key, name, domain})"]
+  CPROF["(:CompanyYearProfile {source_profile_id, year, revenue, R&D, employees, is_synthetic})"]
+  CO -->|"HEADQUARTERED_IN"| ACTOR
+  CO -->|"HAS_YEAR_PROFILE"| CPROF
+  COUNTRY_OBS["(:AIInfrastructureBudget {budget_id, year, investment, data_center_investment, subsidies, sovereignty_index, is_synthetic})"]
+  ENERGY["(:EnergyObservation {energy_id, year, grid_capacity, AI_energy, grid_stress, is_synthetic})"]
+  MACRO["(:MacroObservation {macro_id, year, GDP, dedollarization_index, risk_score, is_synthetic})"]
+  ACTOR -->|"HAS_AI_BUDGET"| COUNTRY_OBS
+  ACTOR -->|"HAS_ENERGY_OBSERVATION"| ENERGY
+  ACTOR -->|"HAS_MACRO_OBSERVATION"| MACRO
+  ACTOR -->|"TRADE_SUMMARY {year, value, volume, observations, controlled_observations, is_synthetic} derived per pair and year"| ACTOR2

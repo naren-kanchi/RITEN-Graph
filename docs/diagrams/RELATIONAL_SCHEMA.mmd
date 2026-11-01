@@ -1,0 +1,36 @@
+flowchart TB
+  ACTOR["geopolitical_actor<br/>PK actor_code"]
+  COUNTRY["country_profile<br/>PK/FK actor_code"]
+  HW["hardware_type<br/>PK hardware_type"]
+  SUP["supplier_label<br/>PK supplier_label_id"]
+  TRADE["trade_flow<br/>PK trade_id<br/>FK exporter_actor_code<br/>FK importer_actor_code<br/>FK hardware_type<br/>FK supplier_label_id"]
+  RTYPE["restriction_type<br/>PK restriction_type"]
+  ATECH["affected_technology<br/>PK technology_label"]
+  RESTR["restriction_measure<br/>PK sanction_id<br/>FK imposing_actor_code<br/>FK target_actor_code<br/>FK restriction_type<br/>FK affected_technology"]
+  BUDGET["ai_infrastructure_budget<br/>PK budget_id<br/>FK actor_code<br/>UNIQUE actor_code + year"]
+  ENERGY["energy_grid_observation<br/>PK energy_id<br/>FK actor_code<br/>UNIQUE actor_code + year"]
+  MACRO["macroeconomic_observation<br/>PK macro_id<br/>FK actor_code<br/>UNIQUE actor_code + year"]
+  COMPANY["company<br/>PK company_key<br/>FK hq_actor_code"]
+  PROFILE["company_year_profile<br/>PK source_profile_id<br/>FK company_key<br/>UNIQUE company_key + year"]
+  ACTOR --> COUNTRY
+  COUNTRY --> TRADE
+  HW --> TRADE
+  SUP --> TRADE
+  ACTOR --> RESTR
+  RTYPE --> RESTR
+  ATECH --> RESTR
+  COUNTRY --> BUDGET
+  COUNTRY --> ENERGY
+  COUNTRY --> MACRO
+  COUNTRY --> COMPANY
+  COMPANY --> PROFILE
+  USER["app_user<br/>PK user_id<br/>UNIQUE username"]
+  NOTE["annotation<br/>PK annotation_id<br/>FK created_by"]
+  ALIAS["supplier_company_alias<br/>PK alias_id<br/>FK supplier_label_id<br/>FK company_key<br/>FK proposed_by<br/>FK reviewed_by<br/>UNIQUE approved label"]
+  AUDIT["audit_log<br/>PK audit_id<br/>written by triggers"]
+  USER --> NOTE
+  USER --> ALIAS
+  SUP --> ALIAS
+  COMPANY --> ALIAS
+  NOTE -. "trigger" .-> AUDIT
+  ALIAS -. "trigger" .-> AUDIT

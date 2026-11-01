@@ -1,0 +1,11 @@
+flowchart LR
+  BROWSER["Browser"] --> NEXT["Next.js: pages and /api proxy"]
+  NEXT -->|"HTTP, session cookie"| API["FastAPI: one service with SQL, graph, curation and admin routers"]
+  API -->|"app role: read facts, write curation data"| PG[("PostgreSQL: system of record")]
+  API -->|"read-only traversals"| NEO[("Neo4j: graph projection")]
+  API <-->|"cache-aside, optional"| CACHE[("Redis")]
+  WORKER(["Prefetch worker, optional"]) -->|"reads events and candidate data"| PG
+  WORKER -->|"reads candidate graph views"| NEO
+  WORKER -->|"fills bounded entries"| CACHE
+  ETL(["ETL, owner role"]) -->|"loads"| PG
+  ETL -->|"projects"| NEO

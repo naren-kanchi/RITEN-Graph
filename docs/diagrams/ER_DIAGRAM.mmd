@@ -1,0 +1,229 @@
+flowchart LR
+  subgraph IDENTITY["Actor identity"]
+    ACTOR["GEOPOLITICAL_ACTOR"]
+    A_CODE(["actor_code PK"])
+    A_NAME(["actor_name"])
+    A_TYPE(["actor_type"])
+    ACTOR --- A_CODE
+    ACTOR --- A_NAME
+    ACTOR --- A_TYPE
+    COUNTRY["COUNTRY_PROFILE"]
+    C_CODE(["actor_code PK/FK"])
+    C_REGION(["region"])
+    C_BLOC(["alliance_bloc"])
+    COUNTRY --- C_CODE
+    COUNTRY --- C_REGION
+    COUNTRY --- C_BLOC
+    HAS_PROFILE{"has country profile"}
+    ACTOR ---|"1"| HAS_PROFILE
+    HAS_PROFILE ---|"0..1"| COUNTRY
+  end
+
+  subgraph TRADE_DOMAIN["Trade, hardware and supplier labels"]
+    TRADE["TRADE_FLOW"]
+    T_ID(["trade_id PK"])
+    T_PERIOD(["year, quarter"])
+    T_VALUE(["trade value USD millions"])
+    T_VOL(["volume units"])
+    T_ROUTE(["trade route"])
+    T_CONTROL(["export control applied"])
+    T_SYN(["is_synthetic"])
+    TRADE --- T_ID
+    TRADE --- T_PERIOD
+    TRADE --- T_VALUE
+    TRADE --- T_VOL
+    TRADE --- T_ROUTE
+    TRADE --- T_CONTROL
+    TRADE --- T_SYN
+    HW["HARDWARE_TYPE"]
+    HW_NAME(["hardware_type PK"])
+    HW_CAT(["hardware_category"])
+    HW --- HW_NAME
+    HW --- HW_CAT
+    SUP["SUPPLIER_LABEL"]
+    SUP_NAME(["supplier_label PK"])
+    SUP --- SUP_NAME
+    EXP{"exporter"}
+    IMP{"importer"}
+    HAS_HW{"uses hardware type"}
+    HAS_SUP{"reports supplier label"}
+    COUNTRY ---|"1"| EXP
+    EXP ---|"N"| TRADE
+    COUNTRY ---|"1"| IMP
+    IMP ---|"N"| TRADE
+    HW ---|"1"| HAS_HW
+    HAS_HW ---|"N"| TRADE
+    SUP ---|"1"| HAS_SUP
+    HAS_SUP ---|"N"| TRADE
+  end
+
+  subgraph RESTRICTIONS["Restrictions and technology labels"]
+    RESTR["RESTRICTION_MEASURE"]
+    R_ID(["sanction_id PK"])
+    R_DATE(["date_implemented"])
+    R_SEVERITY(["severity_level"])
+    R_STATUS(["status"])
+    R_SYN(["is_synthetic"])
+    RESTR --- R_ID
+    RESTR --- R_DATE
+    RESTR --- R_SEVERITY
+    RESTR --- R_STATUS
+    RESTR --- R_SYN
+    RTYPE["RESTRICTION_TYPE"]
+    RT_NAME(["restriction_type PK"])
+    RTYPE --- RT_NAME
+    ATECH["AFFECTED_TECHNOLOGY"]
+    AT_NAME(["technology_label PK"])
+    ATECH --- AT_NAME
+    ISSUES{"imposes"}
+    TARGETS{"targets"}
+    CLASSIFIED{"has restriction type"}
+    AFFECTS{"names affected technology"}
+    ACTOR ---|"1"| ISSUES
+    ISSUES ---|"N"| RESTR
+    ACTOR ---|"1"| TARGETS
+    TARGETS ---|"N"| RESTR
+    RTYPE ---|"1"| CLASSIFIED
+    CLASSIFIED ---|"N"| RESTR
+    ATECH ---|"1"| AFFECTS
+    AFFECTS ---|"N"| RESTR
+  end
+
+  subgraph COUNTRY_YEAR["National AI infrastructure and economic observations"]
+    BUDGET["AI_INFRASTRUCTURE_BUDGET"]
+    B_ID(["budget_id PK"])
+    B_YEAR(["year"])
+    B_DC(["datacenter investment"])
+    B_SUB(["semiconductor subsidies"])
+    B_SWF(["SWF allocation"])
+    B_SUPER(["supercomputer project count"])
+    B_SYN(["is_synthetic"])
+    BUDGET --- B_ID
+    BUDGET --- B_YEAR
+    BUDGET --- B_DC
+    BUDGET --- B_SUB
+    BUDGET --- B_SWF
+    BUDGET --- B_SUPER
+    BUDGET --- B_SYN
+
+    ENERGY["ENERGY_GRID_OBSERVATION"]
+    E_ID(["energy_id PK"])
+    E_YEAR(["year"])
+    E_CAP(["grid capacity"])
+    E_DC(["AI data-center energy"])
+    E_STRESS(["AI grid stress"])
+    E_SYN(["is_synthetic"])
+    ENERGY --- E_ID
+    ENERGY --- E_YEAR
+    ENERGY --- E_CAP
+    ENERGY --- E_DC
+    ENERGY --- E_STRESS
+    ENERGY --- E_SYN
+
+    MACRO["MACROECONOMIC_OBSERVATION"]
+    M_ID(["macro_id PK"])
+    M_YEAR(["year"])
+    M_GDP(["GDP"])
+    M_DEDOL(["dedollarization index"])
+    M_RES(["foreign reserves"])
+    M_RISK(["domain risk score"])
+    M_SYN(["is_synthetic"])
+    MACRO --- M_ID
+    MACRO --- M_YEAR
+    MACRO --- M_GDP
+    MACRO --- M_DEDOL
+    MACRO --- M_RES
+    MACRO --- M_RISK
+    MACRO --- M_SYN
+
+    HAS_BUDGET{"has annual AI budget"}
+    HAS_ENERGY{"has annual energy record"}
+    HAS_MACRO{"has annual macro record"}
+    COUNTRY ---|"1"| HAS_BUDGET
+    HAS_BUDGET ---|"N"| BUDGET
+    COUNTRY ---|"1"| HAS_ENERGY
+    HAS_ENERGY ---|"N"| ENERGY
+    COUNTRY ---|"1"| HAS_MACRO
+    HAS_MACRO ---|"N"| MACRO
+  end
+
+  subgraph COMPANY_DOMAIN["Technology companies and annual company profiles"]
+    COMPANY["COMPANY"]
+    CO_KEY(["company_key PK"])
+    CO_NAME(["company_name"])
+    CO_DOMAIN(["primary_domain"])
+    CO_FOUNDED(["year_founded"])
+    COMPANY --- CO_KEY
+    COMPANY --- CO_NAME
+    COMPANY --- CO_DOMAIN
+    COMPANY --- CO_FOUNDED
+    PROFILE["COMPANY_YEAR_PROFILE"]
+    P_ID(["source company_id PK"])
+    P_YEAR(["year"])
+    P_REV(["revenue"])
+    P_RD(["R&D expenditure"])
+    P_EMP(["employees"])
+    P_RISK(["geopolitical exposure / sanction risk"])
+    P_SYN(["is_synthetic"])
+    PROFILE --- P_ID
+    PROFILE --- P_YEAR
+    PROFILE --- P_REV
+    PROFILE --- P_RD
+    PROFILE --- P_EMP
+    PROFILE --- P_RISK
+    PROFILE --- P_SYN
+    HQ{"headquartered in"}
+    HAS_YEAR_PROFILE{"has annual profile"}
+    COUNTRY ---|"1"| HQ
+    HQ ---|"N"| COMPANY
+    COMPANY ---|"1"| HAS_YEAR_PROFILE
+    HAS_YEAR_PROFILE ---|"N"| PROFILE
+  end
+
+  subgraph APP_DOMAIN["Application accounts, curation and audit"]
+    USER["APP_USER"]
+    U_ID(["user_id PK"])
+    U_NAME(["username"])
+    U_HASH(["password_hash"])
+    U_ROLE(["role"])
+    USER --- U_ID
+    USER --- U_NAME
+    USER --- U_HASH
+    USER --- U_ROLE
+    NOTE["ANNOTATION"]
+    N_ID(["annotation_id PK"])
+    N_ENTITY(["entity_type, entity_key"])
+    N_TEXT(["note"])
+    NOTE --- N_ID
+    NOTE --- N_ENTITY
+    NOTE --- N_TEXT
+    ALIAS["SUPPLIER_COMPANY_ALIAS"]
+    AL_ID(["alias_id PK"])
+    AL_EV(["evidence, confidence"])
+    AL_ST(["status"])
+    ALIAS --- AL_ID
+    ALIAS --- AL_EV
+    ALIAS --- AL_ST
+    AUDIT["AUDIT_LOG"]
+    AU_ID(["audit_id PK"])
+    AU_OP(["table_name, operation, row_pk"])
+    AU_ROW(["old_row, new_row"])
+    AUDIT --- AU_ID
+    AUDIT --- AU_OP
+    AUDIT --- AU_ROW
+    WRITES{"writes"}
+    PROPOSES{"proposes"}
+    REVIEWS{"reviews"}
+    LABEL_OF{"candidate label"}
+    COMPANY_OF{"candidate company"}
+    USER ---|"1"| WRITES
+    WRITES ---|"N"| NOTE
+    USER ---|"1"| PROPOSES
+    PROPOSES ---|"N"| ALIAS
+    USER ---|"0..1"| REVIEWS
+    REVIEWS ---|"N"| ALIAS
+    SUP ---|"1"| LABEL_OF
+    LABEL_OF ---|"N"| ALIAS
+    COMPANY ---|"1"| COMPANY_OF
+    COMPANY_OF ---|"N"| ALIAS
+  end

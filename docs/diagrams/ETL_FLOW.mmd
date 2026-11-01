@@ -1,0 +1,12 @@
+flowchart TD
+  FILES["Six source CSVs in data/"] --> CONTRACT["Contract check: filename, header, row and synthetic counts"]
+  CONTRACT --> RAW["Raw staging tables, all text, with batch, file and row number"]
+  REF["reference/actor_mapping.csv, reviewed actor codes"] --> RULES
+  RAW --> RULES["Validation rules"]
+  RULES -->|"any blocking error"| REJECT["Roll back the batch; record it as failed with row identifiers"]
+  RULES -->|"caveats only"| REL["Normalized PostgreSQL tables, upserted in one transaction"]
+  RULES --> CAVEATS["Disclosed caveats: etl_issue and DATA_QUALITY_REPORT.md"]
+  REL --> RECON["Reconcile canonical counts and synthetic flags"]
+  RECON --> GRAPH["Idempotent Neo4j projection with count check"]
+  REL --> REPORTS["SQL views, functions and reports"]
+  GRAPH --> TRAVERSALS["Graph paths and network aggregation"]
