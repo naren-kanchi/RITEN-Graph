@@ -1,0 +1,24 @@
+# Decisions
+
+The project guide's decisions stand unless listed here. Each entry records what the data or the measurements showed.
+
+| # | Decision | Why | Alternative rejected |
+|---|---|---|---|
+| 1 | Build from the six extracted CSVs. | `archive.zip` was not supplied. Filenames, headers and counts are still checked against the guide's audited inventory. | Waiting for the zip. Nothing depends on the container format. |
+| 2 | Run the databases in Docker from the start, not only later. | PostgreSQL, Neo4j and Redis were not installed on the development machine, and this also makes setup repeatable. | Native installs. |
+| 3 | Use non-default host ports (55432, 57687, 57474, 56379, 18000, 13000) on loopback. | The defaults for ports 3000, 8000 and 6379 were already in use. Loopback keeps databases off the network. | Default ports. |
+| 4 | Add a derived `TRADE_SUMMARY` edge per pair and year (592 edges), and keep one `TRADE_FLOW` edge per source row. | Row-level edges produce 2,692,184 two-hop paths. The summary edges keep path search bounded, and a test proves they equal the row edges. | Row edges only, which explode; summary only, which loses the guide's per-row edge rule. |
+| 5 | Add a `UNIQUE` constraint on year, quarter, exporter, importer and hardware type, and a `CHECK` that the control flag matches `restriction_factor < 1`. | Both hold on all 5,656 rows, so the database can enforce them. The guide did not have them. | Enforcing them only in ETL. |
+| 6 | No `>= 0` or sum-to-100 `CHECK` on energy mix shares. | 10 rows have small negative shares and 62 miss 100 by over a point (worst 9.5). A constraint would reject source rows. They are disclosed as caveats. | Clamping or rewriting values. |
+| 7 | IR and RU keep their code as their name, with type `unresolved_source_actor`. | The source gives only the code, and the guide forbids remapping by assumption. | Writing "Iran" and "Russia" into the data. The inference is plausible but not supported by the archive. |
+| 8 | Show source-backed and synthetic counts side by side, as well as offering a filter. | Only 42 of 987 restrictions are source-backed, and none before 2018. A filter alone would nearly empty those views. | A filter only. |
+| 9 | Dash or hatch synthetic years in charts. | All 2024–25 rows are synthetic in five files. An unbroken line would present estimates as observations. | One visual style for all years. |
+| 10 | Keep macro semiconductor exports and trade-file totals as separate measures. | 100 country-years differ by over 25% (Taiwan 2020: $97.83bn vs $41.3bn). They evidently measure different things. | Reconciling or picking one. |
+| 11 | Curated supplier aliases need evidence and approval by a different administrator. | The guide forbids automatic company-to-trade joins. Only 14 of 40 labels match exactly, and near-matches like "Micron" still need a person's judgement. It also gives everyday DML a real purpose. | Name matching. |
+| 12 | Source facts are immutable to the application. The API's database role has no write access to them. | A correction screen over source data would break lineage and be overwritten by the next load. Annotations and aliases carry INSERT, UPDATE and DELETE instead. | Direct edits by administrators. |
+| 13 | The `restriction` reroute view counts measures imposed up to and including the selected year. | Every measure has status `Active`, so a measure cannot be shown to have ended. The limitation is stated in the UI. | Counting only that year's measures, which would call a route clear the year after a ban. |
+| 14 | One browser-facing origin: Next.js proxies `/api/*` to FastAPI. | The session cookie can be `HttpOnly` and `SameSite=Strict`, no CORS is needed, and the API address stays out of client bundles. | Calling the API directly from the browser. |
+| 15 | Passwords use Argon2, and a `CHECK` rejects anything not shaped like an Argon2 hash. | The assignment bars plain-text passwords, and this enforces it at database level too. | Application-only enforcement. |
+| 16 | No vector database. | Optional in the assignment. Restriction text is short and mostly templated, so PostgreSQL full-text search fits, and embeddings would add a third paradigm without a use case. | pgvector. |
+| 17 | No SQL/graph service split. See `BENCHMARKS.md`. | One laptop, about 7,000 rows, and no separate scaling, ownership or deployment need. Separate routers already keep the code apart, and a Neo4j outage already leaves SQL pages working (`FAULT_TESTS.md`), so a split would add operations without adding that isolation. | Splitting to match the guide's target diagram, which the guide itself says not to force. |
+| 18 | Upgrade Next.js from the first-pinned 15.3.5 to 15.5.28, and pin a patched PostCSS. | `npm` flagged the first version for a known vulnerability; `npm audit` is now clean. | Moving to Next.js 16, a breaking change with no need here. |
