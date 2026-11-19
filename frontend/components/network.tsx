@@ -6,6 +6,8 @@ type Props = {
   nodes: Row[];
   edges: Row[];
   selected: string | null;
+  /** Actor codes of an explored route; when set, only edges along it stay bright. */
+  route?: string[] | null;
   showTrade: boolean;
   showRestrictions: boolean;
   onSelect: (code: string) => void;
@@ -33,13 +35,15 @@ function curve(a: { x: number; y: number }, b: { x: number; y: number }, bend: n
   return `M${a.x},${a.y}Q${mx},${my} ${b.x},${b.y}`;
 }
 
-export function NetworkGraph({ nodes, edges, selected, showTrade, showRestrictions, onSelect, onEdge }: Props) {
+export function NetworkGraph({ nodes, edges, selected, route, showTrade, showRestrictions, onSelect, onEdge }: Props) {
   const [hover, setHover] = useState<Row | null>(null);
   const place = useMemo(() => positions(nodes), [nodes]);
   const maxValue = Math.max(1, ...edges.filter((e) => e.kind === "trade").map((e) => e.value_usd_millions));
   const maxTotal = Math.max(1, ...nodes.map((n) => n.exports_usd_millions + n.imports_usd_millions));
   const visible = edges.filter((e) => (e.kind === "trade" ? showTrade : showRestrictions));
   const touching = (e: Row) => !selected || e.source === selected || e.target === selected;
+  const onRoute = (e: Row) => !!route && route.slice(1).some((code, i) =>
+    (e.source === route[i] && e.target === code) || (e.source === code && e.target === route[i]));
 
   return (
     <div className="chart">
@@ -57,7 +61,7 @@ export function NetworkGraph({ nodes, edges, selected, showTrade, showRestrictio
           const b = place.get(edge.target);
           if (!a || !b) return null;
           const isTrade = edge.kind === "trade";
-          const active = touching(edge);
+          const active = route ? onRoute(edge) : touching(edge);
           const label = isTrade
             ? `${edge.source} to ${edge.target}: ${fmt.usdM(edge.value_usd_millions)}${edge.is_synthetic ? " (synthetic)" : ""}`
             : `${edge.source} imposed ${edge.value_usd_millions} on ${edge.target}${edge.is_synthetic ? " (all synthetic)" : ""}`;
@@ -83,13 +87,14 @@ export function NetworkGraph({ nodes, edges, selected, showTrade, showRestrictio
           const size = 19 + ((node.exports_usd_millions + node.imports_usd_millions) / maxTotal) * 12;
           const isCountry = node.type === "country";
           const isSelected = selected === node.code;
+          const isOnRoute = !!route?.includes(node.code);
           return (
             <g key={node.code} className="net-node" role="button" tabIndex={0} aria-pressed={isSelected}
               aria-label={`${node.name}, ${fmt.usdM(node.exports_usd_millions)} exports, ${fmt.usdM(node.imports_usd_millions)} imports`}
               onClick={() => onSelect(node.code)}
               onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onSelect(node.code); } }}>
               <circle cx={p.x} cy={p.y} r={size} fill={isCountry ? "var(--surface-2)" : "var(--surface)"}
-                style={{ stroke: isSelected ? "var(--ink)" : "var(--ink-2)", strokeWidth: isSelected ? 3 : 1, strokeDasharray: isCountry ? undefined : "3 2" }} />
+                style={{ stroke: isSelected || isOnRoute ? "var(--ink)" : "var(--ink-2)", strokeWidth: isSelected ? 3 : isOnRoute ? 2 : 1, strokeDasharray: isCountry ? undefined : "3 2" }} />
               <text x={p.x} y={p.y + 4} textAnchor="middle" style={{ fontSize: node.code.length > 3 ? 9 : 12 }}>{node.code}</text>
             </g>
           );

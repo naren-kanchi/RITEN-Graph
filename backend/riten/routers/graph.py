@@ -3,7 +3,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Response
 
-from .. import cache, graphdb, views
+from .. import cache, discovery, graphdb, views
 from ..security import current_user
 from .params import ActorCode, IncludeSynthetic, Limit
 
@@ -82,6 +82,23 @@ def reroutes(source: ActorCode, target: ActorCode, response: Response, year: Gra
             source=source, target=target, year=year, syn=include_synthetic)
         return {"direct": direct[0], "via": via}
     payload = _send(response, "graph_reroutes", dict(source=source, target=target, year=year, s=include_synthetic), compute)
+    if payload is None:
+        raise HTTPException(404, "Unknown actor.")
+    return payload
+
+
+@router.get("/discoveries")
+def discoveries(source: ActorCode, target: ActorCode, response: Response, year: GraphYear = views.LATEST_REAL_YEAR,
+                include_synthetic: IncludeSynthetic = True):
+    """Up to three interesting indirect connections around the selected edge, each explained from graph facts.
+
+    Unlike /graph/paths and /graph/reroutes, which list every route for a pair the user chose, this tests
+    each third actor against domain rules (see riten/discovery.py) and returns only the most surprising.
+    """
+    if source == target:
+        raise HTTPException(422, "Source and target must differ.")
+    payload = _send(response, "graph_discoveries", dict(source=source, target=target, year=year, s=include_synthetic),
+                    lambda: discovery.discover(source, target, year, include_synthetic))
     if payload is None:
         raise HTTPException(404, "Unknown actor.")
     return payload

@@ -4,6 +4,7 @@ import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { ActorCell, Card, DataState, DataTable, PageHead, Select, SyntheticTag } from "@/components/ui";
 import { NetworkGraph } from "@/components/network";
+import { Discoveries } from "@/components/discoveries";
 import { useSession } from "@/components/shell";
 import { fmt, qs, recordNavigation, Row, useApi } from "@/lib/api";
 
@@ -16,6 +17,8 @@ function GraphExplorer() {
   const [showTrade, setShowTrade] = useState(true);
   const [showRestrictions, setShowRestrictions] = useState(false);
   const [edge, setEdge] = useState<Row | null>(null);
+  // The route of a discovery the user chose to explore, drawn over the network.
+  const [route, setRoute] = useState<string[] | null>(null);
   const [source, setSource] = useState("US");
   const [target, setTarget] = useState("CN");
   const [hops, setHops] = useState("3");
@@ -28,6 +31,7 @@ function GraphExplorer() {
   const paths = useApi<Row[]>(sameEnds ? null : `/graph/paths${qs({ source, target, max_hops: hops, limit: 10, ...s })}`);
   const reroutes = useApi<Row>(sameEnds ? null : `/graph/reroutes${qs({ source, target, ...s })}`);
   useEffect(() => { if (selected) recordNavigation("graph_neighborhood", selected); }, [selected]);
+  useEffect(() => setRoute(null), [edge, year, includeSynthetic]);
 
   const actors = (meta.data?.actors ?? []).map((a: Row) => ({ value: a.actor_code, label: a.actor_name }));
   const countries = (meta.data?.actors ?? []).filter((a: Row) => a.has_country_profile).map((a: Row) => ({ value: a.actor_code, label: a.actor_name }));
@@ -45,7 +49,7 @@ function GraphExplorer() {
           <span className="row">
             <label className="check"><input type="checkbox" checked={showTrade} onChange={(e) => setShowTrade(e.target.checked)} /> Trade</label>
             <label className="check"><input type="checkbox" checked={showRestrictions} onChange={(e) => setShowRestrictions(e.target.checked)} /> Restrictions</label>
-            {selected && <button className="btn ghost" onClick={() => setSelected(null)}>Clear selection</button>}
+            {(selected || route) && <button className="btn ghost" onClick={() => { setSelected(null); setRoute(null); }}>Clear selection</button>}
           </span>}>
           <div className="legend">
             <span><i className="line" style={{ borderColor: "var(--series-1)" }} />Trade, thicker means more value</span>
@@ -54,7 +58,7 @@ function GraphExplorer() {
           </div>
           <DataState loading={network.loading} error={network.error}>
             {network.data && (
-              <NetworkGraph nodes={network.data.nodes} edges={network.data.edges} selected={selected}
+              <NetworkGraph nodes={network.data.nodes} edges={network.data.edges} selected={selected} route={route}
                 showTrade={showTrade} showRestrictions={showRestrictions}
                 onSelect={(code) => { setSelected(code === selected ? null : code); setEdge(null); }} onEdge={setEdge} />
             )}
@@ -118,6 +122,11 @@ function GraphExplorer() {
             ))}
           </DataState>
         </Card>
+      )}
+      {edge && (
+        <Discoveries edge={edge} year={year} includeSynthetic={includeSynthetic} edges={network.data?.edges ?? []} active={route}
+          onExplore={(suggestion) => { setSelected(suggestion.via); setRoute(suggestion.route); }}
+          onHop={(hop) => setEdge({ source: hop.source, target: hop.target, kind: hop.kind })} />
       )}
       <Card title="Route analysis" note="Could trade between two countries pass through a third, and is that route free of restrictions?">
         <div className="filters" style={{ marginBottom: 12 }}>
